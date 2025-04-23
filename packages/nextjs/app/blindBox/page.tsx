@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldContractRead, useScaffoldContractWrite,useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
-import { formatEther,TransactionResponse} from "ethers";
+import { formatEther} from "ethers";
 import { notification } from "antd";
 import { motion } from "framer-motion";
 
@@ -21,7 +21,7 @@ export interface Collectible {
   image: string;
   id: number;
   name: string;
-  attributes: { trait_type: string; value: string }[];
+  attributes: {value: string }[];
   owner: string;
   price: string;
   description: string;
@@ -62,7 +62,7 @@ export default function MysteryBoxPage() {
   const [allNFTs, setAllNFTs] = useState<Collectible[]>([]);//存储所有 NFT 数据
 
   const [selectedTokenId, setSelectedTokenId] = useState<number | null>(null);
-  const [userNFTs, setUserNFTs] = useState<Collectible[]>([]);
+  const [userNFTs, setUserNFTs] = useState<Collectible[]>([]);//当前用户可以存入的nft
   const [loadingNFTs, setLoadingNFTs] = useState(true);
 
   // 读取盲盒数据
@@ -122,8 +122,12 @@ export default function MysteryBoxPage() {
         const allNFTs = [...myNFTs, ...createdNFTs].filter(nft => 
           nft.owner?.toLowerCase() === address?.toLowerCase()
         );
+
+        //排除盲盒中已经有的NFT
+        const tokenIds = parsedBox?.tokenIds;
+        const filterNFTs = allNFTs.filter(nft => !tokenIds?.includes(nft.id))
         
-        setUserNFTs(allNFTs);
+        setUserNFTs(filterNFTs);
       } catch (error) {
         console.error("Error loading NFTs:", error);
       } finally {

@@ -9,7 +9,7 @@ export interface Collectible {
   image: string;
   id: number;
   name: string;
-  attributes: { trait_type: string; value: string }[];
+  attributes: {value: string }[];
   owner: string;
   price: string;
   description: string;
@@ -25,19 +25,7 @@ export const MyHoldings = () => {
   const [isListed, setIsListed] = useState<{ [key: number]: boolean }>({});//存储每个收藏品是否被列出（listed）的状态
   const [price, setPrice] = useState<{ [key: number]: string }>({});//存储每个收藏品的价格
   const [currentPage, setCurrentPage] = useState(1);//表示当前显示的页码
-  const itemsPerPage = 6;//表示每页显示的nft数量
-
-  // const { data: yourCollectibleContract } = useScaffoldContract({//获取合约实例
-  //   contractName: "YourCollectible",
-  // });
-
-  // const { data: myTotalBalance } = useScaffoldContractRead({//获取balanceof方法
-  //   contractName: "YourCollectible",
-  //   functionName: "balanceOf",
-  //   args: [connectedAddress],
-  //   watch: true,
-  // });
-
+  const itemsPerPage = 4;//表示每页显示的nft数量
   const broadcastChannel = new BroadcastChannel('nft_channel');//广播系统，发送和接收消息
 
   useEffect(() => {
@@ -244,44 +232,81 @@ export const MyHoldings = () => {
   );
 
   return (
-    <>
-      {myAllCollectibles.length === 0 ? (
-        <div className="flex justify-center items-center mt-10">
-          <div className="text-2xl text-primary-content">暂无NFT</div>
-        </div>
-      ) : (
-        <div className="flex flex-wrap gap-4 my-8 px-5 justify-center">
-          {paginatedNFTs.map((item) => (
-            <div key={item.id}>
-              <NFTCard nft={item} onTransferSuccess={handleTransferSuccess} />
-              <div className="card-actions justify-center">
-                <div className="flex flex-row items-center">
-                  <span className="mr-3">上架</span>
-                  <Switch 
-                    checked={isListed[item.id] || false} 
-                    onChange={(checked: boolean) => handleListToggle(checked, item.id)} 
-                  />
-                  <input
-                    type="text"
-                    value={price[item.id] || ""}
-                    onChange={(e) => setPrice(prev => ({ ...prev, [item.id]: e.target.value }))}
-                    placeholder="Price in ETH"
-                    disabled={isListed[item.id]}
-                    className="border ml-3 p-2 bg-black text-white"
-                  />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 mb-8 text-center">
+          我的数字藏品
+        </h1>
+
+        {myAllCollectibles.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-96">
+            <div className="text-6xl mb-4">🖼️</div>
+            <div className="text-2xl text-purple-200 font-semibold">暂无NFT藏品</div>
+            <p className="text-gray-400 mt-2">快去创建或购买第一个NFT吧！</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {paginatedNFTs.map((item) => (
+                <div 
+                  key={item.id}
+                  className="relative group bg-gray-800 rounded-2xl p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                  <NFTCard nft={item} onTransferSuccess={handleTransferSuccess} />
+                  
+                  <div className="mt-4 space-y-4">
+                    <div className="flex items-center justify-between bg-gray-700 rounded-lg p-3">
+                      <span className="text-sm font-medium text-purple-300">上架状态</span>
+                      <Switch
+                        checked={isListed[item.id] || false}
+                        onChange={(checked) => handleListToggle(checked, item.id)}
+                        className={`${isListed[item.id] ? 'bg-purple-500' : 'bg-gray-600'}`}
+                      />
+                    </div>
+                    
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={price[item.id] || ""}
+                        onChange={(e) => setPrice(prev => ({ ...prev, [item.id]: e.target.value }))}
+                        placeholder="价格 (ETH)"
+                        disabled={isListed[item.id]}
+                        className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-4 text-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 pr-12"
+                      />
+                      <span className="absolute right-4 top-2.5 text-gray-400 text-sm">ETH</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
-      <Pagination
-        current={currentPage}
-        pageSize={itemsPerPage}
-        total={myAllCollectibles.length}
-        onChange={handlePageChange}
-        style={{ marginTop: "2rem", textAlign: "center" }}
-      />
-    </>
+
+            <div className="mt-12 flex justify-center">
+              <Pagination
+                current={currentPage}
+                pageSize={itemsPerPage}
+                total={myAllCollectibles.length}
+                onChange={handlePageChange}
+                itemRender={(page, type, element) => (
+                  <button
+                    className={`${
+                      page === currentPage 
+                        ? 'bg-purple-500 text-white' 
+                        : 'bg-gray-700 text-gray-300'
+                    } mx-1 px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-purple-600 border-none`}
+                  >
+                    {type === 'page' ? page : element}
+                  </button>
+                )}
+                showLessItems
+                className="[&_.ant-pagination-item]:border-none [&_.ant-pagination-item]:bg-transparent 
+                          [&_.ant-pagination-item-link]:border-none [&_.ant-pagination-item-link]:bg-transparent 
+                          bg-transparent text-white"
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 };

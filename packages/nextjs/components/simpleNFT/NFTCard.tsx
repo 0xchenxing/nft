@@ -93,136 +93,104 @@ export const NFTCard = ({ nft, onTransferSuccess }: NFTCardProps) => {
 
   return (
     <>
-      {/* NFT卡片，统一暗黑风格 */}
-      <div className="card card-compact bg-gray-900 shadow-lg sm:min-w-[300px] shadow-secondary text-white">
-        <figure className="relative cursor-pointer" onClick={() => setShowDetails(true)}>
-          <img src={imageURL || nft.image} alt="NFT Image" className="h-80 min-w-full" />
-          <figcaption className="glass absolute bottom-4 left-4 p-4 w-25 rounded-xl">
-            <span className="text-white"># {nft.id}</span>
-          </figcaption>
-        </figure>
-        <div className="card-body space-y-3 text-white">
-          <div className="flex items-center justify-center">
-            <p className="text-xl p-0 m-0 font-semibold">{nftDetails.name}</p>
-            <div className="flex flex-wrap space-x-2 mt-1">
-              {nftDetails.attributes?.map((attr, index) => (
-                <span key={index} className="badge badge-primary py-3">
-                  {attr.trait_type}: {attr.value}
-                </span>
-              ))}
+      <div className="card bg-gray-800 rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-2xl group">
+        <div className="relative overflow-hidden">
+          <img 
+            src={imageURL || nft.image} 
+            alt="NFT" 
+            className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+            onClick={() => setShowDetails(true)}
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 p-4">
+            <h3 className="text-xl font-bold text-white mb-1 truncate">{nftDetails.name}</h3>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-purple-300">#ID {nft.id}</span>
             </div>
           </div>
-          <div className="flex flex-col justify-center mt-1">
-            <p className="my-0 text-lg">{nftDetails.description}</p>
+        </div>
+
+        <div className="p-4 space-y-3">
+          <div className="flex flex-wrap gap-2">
+            {nftDetails.attributes?.map((attr, index) => (
+              <div 
+                key={index}
+                className="px-3 py-1 bg-gray-700 rounded-full text-sm text-purple-300 border border-purple-500/30"
+              >
+                {attr.value}
+              </div>
+            ))}
           </div>
-          <div className="flex space-x-3 mt-1 items-center">
-            <span className="text-lg font-semibold">Owner : </span>
-            <Address address={nftDetails.owner} />
-          </div>
-          {nftDetails.CID && (
-            <div className="flex space-x-3 mt-1 items-center">
-              <span className="text-lg font-semibold">CID : </span>
-              <span>{nftDetails.CID}</span>
-            </div>
-          )}
-          <div className="flex flex-col my-2 space-y-1">
-            <span className="text-lg font-semibold mb-1">Transfer To: </span>
+
+          <div className="space-y-2">
             <AddressInput
               value={transferToAddress}
-              placeholder="receiver address"
-              onChange={(newValue) => setTransferToAddress(newValue)}
+              onChange={setTransferToAddress}
+              placeholder="输入接收地址"
+              className="bg-gray-700 border-gray-600 text-purple-100 rounded-lg"
             />
-          </div>
-          <div className="card-actions justify-end">
             <button
-              className="btn btn-secondary btn-md px-8 tracking-wide bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white transform hover:scale-105 transition duration-200"
               onClick={wrapInTryCatch(handleTransfer, "转移NFT时发生错误")}
-              style={{ margin: "0px auto" }}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg font-semibold
+                       hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-[1.02]"
             >
-              发送
+              立即转移
             </button>
           </div>
         </div>
       </div>
 
-      {/* NFT详情弹窗，暗黑风格 */}
+      {/* 修改后的详情弹窗 */}
       {showDetails && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-gray-900 text-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-start mb-6">
-              <h2 className="text-2xl font-bold">NFT 详情</h2>
-              <button className="btn btn-ghost btn-sm text-white" onClick={() => setShowDetails(false)}>
-                ✕
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-gray-800 rounded-2xl max-w-3xl w-full overflow-hidden border border-gray-700">
+            <div className="flex justify-between items-center p-6 border-b border-gray-700">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                NFT 详情
+              </h2>
+              <button 
+                onClick={() => setShowDetails(false)}
+                className="text-gray-400 hover:text-white transition-colors duration-200 text-2xl"
+              >
+                &times;
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <img src={imageURL || nft.image} alt={nftDetails.name} className="w-full rounded-lg mb-4" />
-                <h3 className="text-xl font-bold mb-2">{nftDetails.name}</h3>
-                <p className="text-base-content/70 mb-4">{nftDetails.description}</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">Token ID:</span>
-                    <span>#{nft.id}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">当前拥有者:</span>
-                    <Address address={nftDetails.owner} />
-                  </div>
-                  {nftDetails.CID && (
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">IPFS CID:</span>
-                      <span className="font-mono text-sm">{nftDetails.CID}</span>
-                    </div>
-                  )}
+            <div className="grid md:grid-cols-2 gap-8 p-6">
+              <div className="space-y-6">
+                <div className="aspect-square bg-gray-700 rounded-xl overflow-hidden">
+                  <img 
+                    src={imageURL || nft.image} 
+                    alt={nftDetails.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-
-                {nftDetails.attributes && (
-                  <div className="mt-4">
-                    <h4 className="font-medium mb-2">属性</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {nftDetails.attributes.map((attr, index) => (
-                        <span key={index} className="badge badge-primary">
-                          {attr.trait_type}: {attr.value}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                
+                <div className="space-y-2">
+                  <DetailItem label="描述" value={nftDetails.description} />
+                  <DetailItem label="拥有者">
+                    <Address address={nftDetails.owner} className="text-purple-300" />
+                  </DetailItem>
+                  {nftDetails.CID && <DetailItem label="IPFS CID" value={nftDetails.CID} />}
+                </div>
               </div>
 
-              <div>
-                <h3 className="text-xl font-bold mb-4">交易历史</h3>
-                <div className="space-y-4">
-                  {eventsLoading ? (
-                    <div className="flex justify-center items-center mt-4">
-                      <span className="loading loading-spinner loading-xl"></span>
-                    </div>
-                  ) : nftTransferHistory && nftTransferHistory.length > 0 ? (
-                    <table className="table table-zebra w-full">
-                      <thead>
-                        <tr>
-                          <th className="bg-primary">From</th>
-                          <th className="bg-primary">To</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {nftTransferHistory.map((transfer, index) => (
-                          <tr key={index}>
-                            <td>
-                              <Address address={transfer.args.from} />
-                            </td>
-                            <td>
-                              <Address address={transfer.args.to} />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <p className="text-center text-base-content/70">暂无交易记录</p>
-                  )}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-purple-300 mb-4">交易历史</h3>
+                  <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                    {nftTransferHistory?.map((transfer, index) => (
+                      <div key={index} className="bg-gray-700 p-3 rounded-lg">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-400">From:</span>
+                          <Address address={transfer.args.from} />
+                        </div>
+                        <div className="flex justify-between mt-1 text-sm">
+                          <span className="text-gray-400">To:</span>
+                          <Address address={transfer.args.to} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -232,5 +200,14 @@ export const NFTCard = ({ nft, onTransferSuccess }: NFTCardProps) => {
     </>
   );
 };
+
+const DetailItem = ({ label, value, children }: { label: string; value?: string; children?: React.ReactNode }) => (
+  <div className="border-b border-gray-700 pb-2">
+    <dt className="text-sm font-medium text-purple-300">{label}</dt>
+    <dd className="mt-1 text-gray-300">
+      {value || children}
+    </dd>
+  </div>
+);
 
 export default NFTCard;
