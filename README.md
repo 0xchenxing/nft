@@ -16,8 +16,6 @@ Yarn: 选择经典版 v1 或现代版 v2+，作为您的依赖管理专家。
 
 Git: 版本控制的瑞士军刀，确保代码的稳定与协作。
 
-FISCO-BCOS: 区块链平台，版本需达到2.3.0或以上，为项目提供坚实的区块链基础。
-
 ## **安装流程**
 
 跟随以下步骤，将数字版权项目平台安装至您的开发环境：
@@ -32,9 +30,7 @@ FISCO-BCOS: 区块链平台，版本需达到2.3.0或以上，为项目提供坚
 
 ﻿[获取Yarn](https://classic.yarnpkg.com/en/docs/install/#windows-stable) 或 [Yarn v2+](https://yarnpkg.com/getting-started/install)﻿
 
-﻿[安装Git](https://git-scm.com/downloads)﻿
-
-﻿[部署FISCO-BCOS](https://fisco-bcos-documentation.readthedocs.io/zh-cn/latest/docs/installation.html)﻿
+﻿[安装Git](https://git-scm.com/downloads)﻿﻿
 
 ### **步骤二：项目初始化**
 
@@ -53,10 +49,6 @@ FISCO-BCOS: 区块链平台，版本需达到2.3.0或以上，为项目提供坚
 
 
 ### **步骤三：智能合约与测试用户**
-
-部署合约：使用FISCO-BCOS部署关键的 Banquan.sol 合约。
-
-﻿
 
 ![img](file:///C:/Users/XUQING~1/AppData/Local/Temp/ksohtml15724/wps2.jpg)
 
